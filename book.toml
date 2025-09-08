@@ -1,0 +1,15 @@
+[book]
+authors = ["Nil"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Tokamak ZKP"
+
+[output.html]
+mathjax-support = true
+collapsed = true
+
+[preprocessor.mermaid]
+
+[preprocessor.katex]
+

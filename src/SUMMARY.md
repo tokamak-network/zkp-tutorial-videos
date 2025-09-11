@@ -26,7 +26,7 @@
   - [Deconstructing Computation: Arithmetic and Copy Constraints](./module-3/constraints.md)
 
 - [Module 4: The Protocol in Depth](./module-4/introduction.md)
-  -  [R1CS and QAP](./module-4/r1cs2.md)
+  -  [R1CS and QAP](./module-4/qap.md)
   -  [R1CS and QAP](./module-4/r1cs.md)
   - [The Arithmetic Argument: Bivariate Groth16 for Subcircuits](./module-4/arithmetic-argument.md)
   - [The Copy Constraint Argument: Bivariate Permutation Check](./module-4/permutation-argument.md)

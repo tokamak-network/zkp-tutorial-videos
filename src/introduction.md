@@ -3,6 +3,24 @@
 
 ## The Definitive Guide to an Efficient SNARK for Field-Programmable and RAM Circuits
 
+
+
+```admonish info
+This is an **info box**.
+```
+
+```admonish warning
+This is a **warning box**!
+```
+
+```admonish tip
+You can put equations inside:  
+\\[
+E = mc^2
+\\]
+```
+
+
 Welcome to the cutting edge of zero-knowledge proofs! This isn't just another lecture series; it's your personalized guide to one of the most exciting advancements in SNARK technology. We're here to demystify the groundbreaking paper, "[An Efficient SNARK for Field-Programmable and RAM Circuits](https://eprint.iacr.org/2024/507)," and show you how it's shaping the future of verifiable computation.
 
 Forget static, program-specific SNARKs. This paper introduces a powerful new approach that combines the best of **Groth16's efficiency** with **Plonk's universality**, all while tackling one of the biggest challenges in distributed systems: the high overhead of RAM circuits. You'll discover how this innovation makes SNARKs more practical than ever for real-world applications like zk-rollups and Ethereum-style virtual machines.

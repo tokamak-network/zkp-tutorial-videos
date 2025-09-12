@@ -23,3 +23,13 @@
 | `C`                      | Circuit structure (gates, wiring, etc.)                                               |
 | `C_fp`                   | Field-programmable circuit composed of subcircuits and wiring info                    |
 | `W_sub`                  | Set of wiring permutations for subcircuits                                            |
+
+# testing 
+
+<iframe
+  src="https://zkrepl.dev/?code=template_example"
+  width="100%"
+  height="500"
+  style="border:1px solid #ccc;"
+>
+</iframe>

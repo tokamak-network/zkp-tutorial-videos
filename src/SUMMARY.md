@@ -8,6 +8,9 @@
   - [Groth16](./Preliminaries/groth16.md)
   - [R1CS](./Preliminaries/r1cs.md)
   - [QAP](./Preliminaries/qap.md)
+   - [Exercise](./Preliminaries/exercise.md)
+   - [Table](./Preliminaries/table.md)
+  
 
 - [Module 1: Foundational Concepts](./module-1/introduction.md)
   - [Proof Systems at a Glance](./module-1/proof-systems.md)

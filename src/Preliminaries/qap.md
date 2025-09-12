@@ -1,10 +1,52 @@
 # Quadratic Arithmetic Programs (QAPs) — Full Example
-:::info
+```admonish info
 **Problem:** I know numbers \\( x,y \\) such that: 
 1. \\( x\cdot y = 12 \\)
 2. \\( x \\) is a perfect square, namely \\( x=s^2 \\)  
 And I want to keep \\( x,y \\) secret. 
-:::
+```
+
+```admonish info
+**What is a QAP?**
+A Quadratic Arithmetic Program (QAP) is a way to encode computational constraints as polynomial equations. It allows us to prove we know secret values that satisfy certain relationships without revealing those values.
+```
+
+```admonish example
+**Circom Implementation:**
+Here's how you would implement the same computation in Circom:
+```
+
+```circom
+pragma circom 2.0.0;
+
+template PerfectSquare() {
+    // Private inputs
+    signal private input s;  // secret square root
+    signal private input y;  // secret factor
+    
+    // Public inputs
+    signal input public_constant;  // should be 12
+    
+    // Intermediate signals
+    signal x;  // the perfect square
+    
+    // Constraints
+    x <== s * s;           // s^2 = x (perfect square)
+    public_constant <== x * y;  // x * y = 12
+    
+    // Output
+    signal output out;
+    out <== x;
+}
+
+component main = PerfectSquare();
+```
+
+
+
+
+
+
 
 We want to prove knowledge of secret numbers \\( s, x, y \in \mathbb{F}_p \\) such that:
 
@@ -22,7 +64,31 @@ The public statement is:
 
 The prover knows the witness \\( (s,x,y) \\).
 
----
+
+## Step 0. Circuit Picture
+
+Before we dive into wires and polynomials, let’s look at the computation as a simple circuit:
+
+```
+
+s ----●×
+\|     (Gate 1: s·s = x)
+s ----●×----> x
+
+x ----●×
+\|     (Gate 2: x·y = 12)
+y ----●×----> 12 (public)
+
+```
+
+* Gate 1 squares \\(s\\) to produce \\(x\\).  
+* Gate 2 multiplies \\(x\\) with \\(y\\) to produce the public constant \\(12\\).
+
+This is the structure we'll encode into R1CS and then QAP.
+
+```admonish tip
+**Visualization Tip:** Drawing the circuit first helps you understand which wires connect to which gates. This makes the later polynomial construction much clearer!
+```
 
 ## Step 1. Wires and Assignments
 
@@ -44,6 +110,11 @@ So for our witness \\( (s=2,x=4,y=3) \\):
 (a_0, a_1, a_2, a_3, a_4) = (1,2,4,3,12).
 \\]
 
+```admonish info
+**Wire Assignment Strategy**
+The key insight is that we assign each variable in our computation to a specific "wire" position. The constant wire \\(a_0=1\\) is always present, while other wires represent our secret and public values.
+```
+
 ---
 
 ## Step 2. Assigning Evaluation Points
@@ -63,9 +134,26 @@ r_1 = 3, \quad r_2 = 4.
 
 These are arbitrary distinct field elements.
 
+```admonish warning
+**Important:** The evaluation points must be distinct field elements. If two gates had the same evaluation point, the polynomial interpolation would fail.
+```
+
 ---
 
 ## Step 3. Selector Polynomials
+
+At each gate’s evaluation point, we record which wires are “active” in the left input, right input, and output. A `1` means the wire participates; a `0` means it does not.
+
+| Gate                | \\(r_q\\) | Left (\\(u_i\\)) | Right (\\(v_i\\)) | Output (\\(w_i\\)) |
+| ------------------- | ------- | -------------- | --------------- | ---------------- |
+| 1 (\\(s\cdot s = x\\))  | \\(3\\)   | \\(u_1=1\\) (s)  | \\(v_1=1\\) (s)   | \\(w_2=1\\) (x)    |
+| 2 (\\(x\cdot y = 12\\)) | \\(4\\)   | \\(u_2=1\\) (x)  | \\(v_3=1\\) (y)   | \\(w_4=1\\) (12)   |
+
+* At \\(X=3\\): only the \\(s\\) wire is in the left and right, output is \\(x\\).  
+* At \\(X=4\\): left is \\(x\\), right is \\(y\\), output is the public constant \\(12\\).  
+
+All other selectors are zero.
+
 
 For each wire \\( a_i \\), we define **selector polynomials** \\( u_i(X), v_i(X), w_i(X) \\).
 
@@ -74,6 +162,11 @@ For each wire \\( a_i \\), we define **selector polynomials** \\( u_i(X), v_i(X)
 * \\( w_i(X) \\): controls whether wire \\( a_i \\) is used in the **output**.
 
 At each evaluation point \\( r_q \\), we set these values based on the gate.
+
+```admonish info
+**Selector Polynomials Explained**
+Think of selector polynomials as "switches" that turn wires on or off at specific gates. At each evaluation point, exactly one wire is active for left input, one for right input, and one for output.
+```
 
 ---
 
@@ -120,7 +213,11 @@ For example:
   \\]
 
 And similarly for each \\( u_i,v_i,w_i \\).  
-(This step shows how the 1’s and 0’s in the selector table turn into real polynomials.)
+(This step shows how the 1's and 0's in the selector table turn into real polynomials.)
+
+```admonish tip
+**Lagrange Interpolation Shortcut:** When you have values at just two points, the interpolating polynomial is always linear: \\(f(X) = \\frac{X-b}{a-b}f(a) + \\frac{X-a}{b-a}f(b)\\)
+```
 
 ---
 
@@ -159,6 +256,11 @@ This means:
 
 So if divisibility holds, **all gates are satisfied simultaneously**.
 
+```admonish info
+**The Magic of Divisibility**
+This is the core insight of QAPs: instead of checking each gate individually, we encode all constraints into a single polynomial equation. If the divisibility condition holds, we know all gates are satisfied at once.
+```
+
 ---
 
 ## Step 7. Checking with Our Witness
@@ -175,6 +277,10 @@ Plugging in \\( (s,x,y) = (2,4,3) \\):
 
 ✅ Both conditions hold → the witness is valid.
 
+```admonish tip
+**Verification Strategy:** Instead of checking each gate separately, we can verify the entire computation by checking one polynomial divisibility condition. This is much more efficient!
+```
+
 ---
 
 # Summary of Notation
@@ -185,7 +291,11 @@ Plugging in \\( (s,x,y) = (2,4,3) \\):
 * \\( t(X)=(X-3)(X-4) \\): target polynomial, zero at each gate’s evaluation point.
 * QAP condition: \\( U(X)V(X)-W(X) \\) divisible by \\( t(X) \\).
 # Groth16 for the example
-Now that we have the **QAP fully clear**, let’s walk step by step into **Groth16** using *our exact example*. I’ll carefully connect every piece of notation so that students see how Groth16 enforces the divisibility condition **in the exponent**.
+Now that we have the **QAP fully clear**, let's walk step by step into **Groth16** using *our exact example*. I'll carefully connect every piece of notation so that students see how Groth16 enforces the divisibility condition **in the exponent**.
+
+```admonish warning
+**Trusted Setup Required:** Groth16 requires a trusted setup ceremony where trapdoor values are generated and then destroyed. If these values are ever revealed, the entire system becomes insecure.
+```
 
 ---
 
@@ -334,6 +444,10 @@ If the equality holds, the proof is valid.
 * **Independence of circuit size:** works for tiny circuits like ours or very large ones.
 
 This is the magic of Groth16: it compresses a big polynomial divisibility check into **3 elliptic curve points and 1 pairing equation**.
+
+```admonish tip
+**Proof Size Advantage:** Unlike other proof systems where proof size grows with circuit complexity, Groth16 always produces exactly 3 group elements regardless of how complex your computation is!
+```
 
 **Disadvantage**: Groth16 requires a trusted setup, and its CRS is circuit-specific (i.e., a new CRS must be generated for each circuit). 
 :::
@@ -504,3 +618,7 @@ Accept iff the single pairing equation holds:
 
 * \\( \mathsf{PI} \\) includes the contribution of \\( a_0=1 \\) and \\( a_4=12 \\) via their pre-encoded \\( \tfrac{\beta u_i(\tau)+\alpha v_i(\tau)+w_i(\tau)}{\gamma} \\) terms.
 * Nothing about \\( s,x,y \\) (the witness) appears in \\( \mathsf{PI} \\); their contribution is hidden inside \\( C \\).
+
+```admonish warning
+**Circuit-Specific CRS:** Each circuit requires its own Common Reference String (CRS). You cannot use the same CRS for different circuits, even if they have the same number of gates.
+```

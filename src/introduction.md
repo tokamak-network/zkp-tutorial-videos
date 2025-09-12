@@ -5,27 +5,17 @@
 
 
 
-```admonish info
-This is an **info box**.
-```
-
-```admonish warning
-This is a **warning box**!
-```
-
-```admonish tip
-You can put equations inside:  
-\\[
-E = mc^2
-\\]
-```
-
-
 Welcome to the cutting edge of zero-knowledge proofs! This isn't just another lecture series; it's your personalized guide to one of the most exciting advancements in SNARK technology. We're here to demystify the groundbreaking paper, "[An Efficient SNARK for Field-Programmable and RAM Circuits](https://eprint.iacr.org/2024/507)," and show you how it's shaping the future of verifiable computation.
 
 Forget static, program-specific SNARKs. This paper introduces a powerful new approach that combines the best of **Groth16's efficiency** with **Plonk's universality**, all while tackling one of the biggest challenges in distributed systems: the high overhead of RAM circuits. You'll discover how this innovation makes SNARKs more practical than ever for real-world applications like zk-rollups and Ethereum-style virtual machines.
 
 We don't want to reinvent the wheel, so we won't repeat every foundational concept from scratch. Instead, for each section, we'll provide a comprehensive list of resources to guide you. This ensures you won't get lost and can easily supplement your learning with external materials.
+
+<video width="640" height="360" controls>
+  <source src="./video/tutorial guide_0814.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 
 ### Your Journey, Your Way 🗺️
 
